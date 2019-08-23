@@ -28,21 +28,24 @@ async function main() {
   controls.update();
 
   const scene = new THREE.Scene();
-  const world = new World(scene, 0.01, Math.sqrt(3));
+  const world = new World(scene, 0.001, Math.sqrt(3));
 
-  const light = new THREE.AmbientLight(0xFFFFFF, 1);
+  const light = new THREE.AmbientLight(0xFF00FF, 1);
   light.position.set(0, 0, 0);
   scene.add(light);
 
-  let body_1 = new Body(1, new THREE.Vector3(0, 0, -1), new THREE.Vector3(1, 0, 0));
+  let sun = new Body(1e3, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0));
+  sun.set_mesh(makeGlassBallMesh(0.2));
+  let body_1 = new Body(1, new THREE.Vector3(0, 0, -5), new THREE.Vector3(10, 0, 0));
   body_1.set_mesh(makeGlassBallMesh(0.2));
-  let body_2 = new Body(1, new THREE.Vector3(Math.sqrt(3)/2, 0, 0.5), new THREE.Vector3(-0.5, 0, Math.sqrt(3)/2));
-  body_2.set_mesh(makeGlassBallMesh(0.2));
-  let body_3 = new Body(1, new THREE.Vector3(-Math.sqrt(3)/2, 0, 0.5), new THREE.Vector3(-0.5, 0, -Math.sqrt(3)/2));
-  body_3.set_mesh(makeGlassBallMesh(0.2));
+  // let body_2 = new Body(1, new THREE.Vector3(Math.sqrt(3)/2, 0, 0.5), new THREE.Vector3(-0.5, 0, Math.sqrt(3)/2));
+  // body_2.set_mesh(makeGlassBallMesh(0.2));
+  // let body_3 = new Body(1, new THREE.Vector3(-Math.sqrt(3)/2, 0, 0.5), new THREE.Vector3(-0.5, 0, -Math.sqrt(3)/2));
+  // body_3.set_mesh(makeGlassBallMesh(0.2));
+  world.add_body(sun);
   world.add_body(body_1);
-  world.add_body(body_2);
-  world.add_body(body_3);
+  // world.add_body(body_2);
+  // world.add_body(body_3);
 
   var gridHelper = new THREE.GridHelper(10, 10);
   scene.add( gridHelper );
