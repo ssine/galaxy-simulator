@@ -9,16 +9,22 @@ class Body {
   force: Vec3;
   time: number;
   mesh: THREE.Mesh | null;
+  scale: number;
+  fixed: boolean;
 
-  constructor(mass: number, position: Vec3, velocity = new THREE.Vector3(0, 0, 0)) {
+  constructor(mass: number, position: Vec3, velocity = new THREE.Vector3(0, 0, 0), fixed = false) {
     this.mass = mass;
     this.position = position;
     this.velocity = velocity;
     this.force = new THREE.Vector3(0, 0, 0);
     this.mesh = null;
     this.time = -1;
+    this.fixed = fixed;
   };
 
+  set_scale(scale: number) {
+    this.scale = scale;
+  }
   set_mesh(mesh: THREE.Mesh) {
     this.mesh = mesh;
   };
@@ -40,6 +46,7 @@ class Body {
       this.time = time;
       return;
     }
+    if (this.fixed) return;
     let delta = time - this.time;
     this.time = time;
     this.velocity.addScaledVector(this.force.divideScalar(this.mass), delta);
@@ -49,6 +56,7 @@ class Body {
   sync() {
     if (this.mesh === null) throw 'no corresponding mesh in scene.';
     this.mesh.position.copy(this.position);
+    this.mesh.position.multiplyScalar(this.scale);
   };
 }
 
@@ -58,16 +66,19 @@ class World {
   G: number;
   time: number;
   step_time: number;
-  constructor(scene: THREE.Scene, step_time: number, G = 6.67259e-11) {
+  scale: number;
+  constructor(scene: THREE.Scene, step_time: number, scale = 1, G = 6.67259e-11) {
     this.scene = scene;
     this.bodies = [];
     this.G = G;
     this.time = 0;
     this.step_time = step_time;
+    this.scale = scale;
   };
 
   add_body(b: Body) {
     if (b.mesh === null) throw 'body without mesh cannot be added to a world.';
+    b.set_scale(this.scale);
     this.scene.add(b.mesh);
     this.bodies.push(b);
   }
