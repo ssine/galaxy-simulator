@@ -175,7 +175,7 @@ class World {
       return new Body({
         ...default_config,
         mass: m_ab,
-        density: (a.density * m_a + b.density * m_b) / m_ab,
+        density: f.density,
         position: f.position,
         fixed: true
       });

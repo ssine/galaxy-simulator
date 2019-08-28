@@ -40,6 +40,7 @@ function random_in_ellipsoid(a: number, b: number, c: number): THREE.Vector3 {
 function add_sun(world: World) {
   let sun = new Body({
     ...default_config,
+    density: default_config.density * 10,
     mass: data.sun.mass,
     position: new THREE.Vector3(0, 0, 0),
     fixed: true
@@ -96,7 +97,9 @@ async function main() {
   renderer.autoClearColor = false;
 
   const camera = new THREE.PerspectiveCamera(75, 2, 0.1, 1000);
-  camera.position.z = 2;
+  camera.position.z = 2 * config.spawn_radius + 5;
+  camera.position.y = 3;
+  camera.rotateY(- Math.atan(camera.position.y / camera.position.z));
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.update();
