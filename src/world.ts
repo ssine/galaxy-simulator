@@ -1,27 +1,8 @@
 import * as THREE from 'three'
 import { hsv_to_rgb } from './utils'
+import { solar_sys_data as data, default_config, trace_num, trace_prelocate } from './common'
 
 type Vec3 = THREE.Vector3;
-
-const data = {
-  earth: {
-    mass: 5.965e24,
-    radius: 6371000,
-    orbit_radius: 149597870700,
-    velocity: 29805.655
-  },
-  sun: {
-    mass: 1.986e30
-  }
-}
-
-let default_config = {
-  density: data.earth.mass / (4 / 3 * Math.PI * Math.pow(data.earth.radius, 3)),
-  position_scale: 2 / data.earth.orbit_radius,
-  radius_scale: 0.01 / data.earth.radius
-}
-
-const trace_num = 500, trace_prelocate = 5;
 
 class Body {
   mass: number;

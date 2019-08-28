@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { bg_uri } from './common'
 
 function makeCude(config: {
   width: number,
@@ -21,6 +22,17 @@ function makeSphere(config: {
   let geometry = new THREE.SphereGeometry(radius, num_segments, num_segments);
   let material = new THREE.MeshPhongMaterial(material_config);
   return new THREE.Mesh(geometry, material);
+}
+
+function makeGlassBall(radius: number): THREE.Mesh {
+  let sph_texture = new THREE.TextureLoader().load(bg_uri);
+  sph_texture.mapping = THREE.EquirectangularRefractionMapping;
+  let sphere = makeSphere({
+    radius: radius,
+    num_segments: 32,
+    material_config: { color: 0xffffff, envMap: sph_texture, refractionRatio: 0.98, reflectivity: 0.7 }
+  });
+  return sphere;
 }
 
 async function makeBackground(config: {
@@ -97,6 +109,7 @@ async function make3DText(config: {
 export {
   makeCude,
   makeSphere,
+  makeGlassBall,
   makeBackground,
   make2DText
 }
