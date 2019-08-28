@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { hsv_to_rgb } from './utils'
-import { solar_sys_data as data, default_config, trace_num, trace_prelocate } from './common'
+import { solar_sys_data as data, default_config, trace_config } from './common'
 
 type Vec3 = THREE.Vector3;
 
@@ -52,11 +52,11 @@ class Body {
     this.sync();
 
     let trace_geometry = new THREE.BufferGeometry();
-    let positions = new Float32Array(trace_num * 3 * trace_prelocate);
+    let positions = new Float32Array(trace_config.trace_num * 3 * trace_config.trace_prelocate);
     positions[0] = this.position.x * this.position_scale;
     positions[1] = this.position.y * this.position_scale;
     positions[2] = this.position.z * this.position_scale;
-    for (let i = 0; i < trace_num; i++)
+    for (let i = 0; i < trace_config.trace_num; i++)
       trace_geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
     trace_geometry.setDrawRange(0, 1);
     this._trace_start_idx = 0;
@@ -97,7 +97,7 @@ class Body {
 
     let trace_geometry: THREE.BufferGeometry = <THREE.BufferGeometry>this.trace_mesh.geometry;
     let positions = <any[]>trace_geometry.attributes.position.array;
-    if (this._trace_end_idx === trace_num * trace_prelocate - 1) {
+    if (this._trace_end_idx === trace_config.trace_num * trace_config.trace_prelocate - 1) {
       let last_start = this._trace_start_idx * 3;
       for (let i = 0; i < this._trace_end_idx - this._trace_start_idx; i++) {
         let idx = i * 3;
@@ -112,8 +112,8 @@ class Body {
     positions[this._trace_end_idx * 3 + 1] = this.position.y * this.position_scale;
     positions[this._trace_end_idx * 3 + 2] = this.position.z * this.position_scale;
     this._trace_end_idx++;
-    if (this._trace_end_idx - this._trace_start_idx > trace_num)
-      this._trace_start_idx = this._trace_end_idx - trace_num;
+    if (this._trace_end_idx - this._trace_start_idx > trace_config.trace_num)
+      this._trace_start_idx = this._trace_end_idx - trace_config.trace_num;
     trace_geometry.setDrawRange(this._trace_start_idx, this._trace_end_idx - this._trace_start_idx);
     //@ts-ignore
     trace_geometry.attributes.position.needsUpdate = true;

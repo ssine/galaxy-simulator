@@ -16,12 +16,15 @@ const default_config = {
   radius_scale: 0.01 / solar_sys_data.earth.radius
 }
 
-const trace_num = 500, trace_prelocate = 5;
+let trace_config = {
+  trace_num: 200,
+  trace_prelocate: 5
+}
 const bg_uri = 'assets/img/ESA_Gaia_DR2_AllSky_Brightness_Colour_Cartesian_2000x1000.png';
 
 export {
   solar_sys_data,
   default_config,
-  trace_num, trace_prelocate,
+  trace_config,
   bg_uri
 }

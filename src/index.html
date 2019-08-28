@@ -13,7 +13,50 @@
 </head>
 
 <body>
+
+  <div id="config">
+    <h1>Galaxy Simulator</h1>
+    <p>aeklibjdrhg sjdfhj kjhefbkej kehj</p>
+    <table>
+      <tr>
+        <td><span>number of planets:</span></td>
+        <td><input type="number" name="num-planets" id="num-planets" value="3000"></td>
+      </tr>
+      <tr>
+        <td><span>radius of spawn range / radius of Earth orbit:</span></td>
+        <td><input type="number" name="spawn-radius" id="spawn-radius" value="1.5"></td>
+      </tr>
+      <tr>
+        <td><span>average planet mass / Earth mass:</span></td>
+        <td><input type="text" name="planet-mass" id="planet-mass" value="500"></td>
+      </tr>
+      <tr>
+        <td><span>average planet velocity / Earth velocity:</span></td>
+        <td><input type="text" name="planet-velocity" id="planet-velocity" value="1.5"></td>
+      </tr>
+      <tr>
+        <td><span>tail length:</span></td>
+        <td><input type="number" name="tail-length" id="tail-length" value="150"></td>
+      </tr>
+      <tr>
+        <td><span>spawn shape:</span></td>
+        <td>
+          <select name="spawn-shape" id="spawn-shape">
+            <option id="flat-shape" value="flat">flat</option>
+            <option id="sphere-shape" value="sphere">sphere</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><span>spawn sun:</span></td>
+        <td><input type="checkbox" name="spawn-sun" id="spawn-sun"></td>
+      </tr>
+    </table>
+    <button id="start">Start!</button>
+  </div>
+
   <canvas id="stage"></canvas>
   <script src="js/main.js"></script>
+
 </body>
 </html>

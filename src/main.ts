@@ -1,18 +1,21 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three-orbitcontrols-ts'
 import { resizeRendererToDisplaySize } from './utils'
-import { makeSphere, makeBackground, makeGlassBall } from './instances'
+import { makeBackground, makeGlassBall } from './instances'
 import { Body, World } from './world'
 import { Stats } from 'stats-js'
-import { solar_sys_data as data, default_config, bg_uri } from './common'
+import { solar_sys_data as data, default_config, bg_uri, trace_config } from './common'
 
-const config = {
-  num_planets: 500,
-  total_mass: data.sun.mass * 1.2,
-  max_radius: data.earth.orbit_radius * 30 // 30 AU
+let config = {
+  num_planets: 3000,
+  spawn_radius: 1.5,
+  planet_mass: 500,
+  planet_velocity: 0.5,
+  spawn_shape: 'flat',
+  spawn_sun: false
 }
 
-function random_sphere_ponit(inner_r: number, outer_r: number): THREE.Vector3 {
+function random_in_sphere_shell(inner_r: number, outer_r: number): THREE.Vector3 {
   let r = Math.random() * (outer_r - inner_r) + inner_r;
   let theta = Math.random() * Math.PI * 2;
   let phi = (Math.random() - 0.5) * Math.PI;
@@ -24,7 +27,17 @@ function random_sphere_ponit(inner_r: number, outer_r: number): THREE.Vector3 {
   );
 }
 
-function add_sun_and_earth(world: World) {
+function random_in_ellipsoid(a: number, b: number, c: number): THREE.Vector3 {
+  while (true) {
+    let x = (Math.random() - 0.5) * a * 2;
+    let y = (Math.random() - 0.5) * b * 2;
+    let z = (Math.random() - 0.5) * c * 2;
+    if (x*x/a/a + y*y/b/b + z*z/c/c < 1)
+      return new THREE.Vector3(x, y, z);
+  }
+}
+
+function add_sun(world: World) {
   let sun = new Body({
     ...default_config,
     mass: data.sun.mass,
@@ -32,6 +45,10 @@ function add_sun_and_earth(world: World) {
     fixed: true
   });
   sun.set_mesh(makeGlassBall(0.5));
+  world.add_body(sun);
+}
+
+function add_earth(world: World) {
   let earth = new Body({
     ...default_config,
     mass: data.earth.mass,
@@ -39,29 +56,34 @@ function add_sun_and_earth(world: World) {
     velocity: new THREE.Vector3(data.earth.velocity, 0, 0)
   });
   earth.set_mesh(makeGlassBall(0.2));
-  world.add_body(sun);
   world.add_body(earth);
 }
 
-function add_random_body_sphere(world: World) {
-  for (let i = 0; i < 3000; i++) {
+function add_random_body_sphere(world: World, num: number) {
+  for (let i = 0; i < num; i++) {
     let p = new Body({
       ...default_config,
       mass: Math.random() * data.earth.mass * 1000,
-      position: random_sphere_ponit(data.earth.orbit_radius * 0.3, data.earth.orbit_radius * 3),
-      velocity: random_sphere_ponit(data.earth.velocity * 0.1, data.earth.velocity * 1) 
+      position: random_in_sphere_shell(data.earth.orbit_radius * 0.3, data.earth.orbit_radius * config.spawn_radius * 2),
+      velocity: random_in_sphere_shell(data.earth.velocity * 0.1, data.earth.velocity * config.planet_velocity * 2) 
     });
     world.add_body(p);
   }
 }
 
-function add_random_body_flat(world: World) {
-  for (let i = 0; i < 3000; i++) {
+function add_random_body_flat(world: World, num: number) {
+  let p_a = data.earth.orbit_radius * config.spawn_radius * 2;
+  let p_b = p_a;
+  let p_c = p_a / 6;
+  let v_a = data.earth.velocity * config.planet_velocity * 2;
+  let v_b = v_a;
+  let v_c = v_a / 6;
+  for (let i = 0; i < num; i++) {
     let p = new Body({
       ...default_config,
-      mass: Math.random() * data.earth.mass * 1000,
-      position: random_sphere_ponit(data.earth.orbit_radius * 0.3, data.earth.orbit_radius * 3),
-      velocity: random_sphere_ponit(data.earth.velocity * 0.1, data.earth.velocity * 1) 
+      mass: Math.random() * data.earth.mass * config.planet_mass * 2,
+      position: random_in_ellipsoid(p_a, p_c, p_b),
+      velocity: random_in_ellipsoid(v_a, v_c, v_b),
     });
     world.add_body(p);
   }
@@ -86,7 +108,12 @@ async function main() {
   light.position.set(0, 0, 0);
   scene.add(light);
 
-  add_random_body_sphere(world);
+  if (config.spawn_sun)
+    add_sun(world);
+  if (config.spawn_shape === 'flat')
+    add_random_body_flat(world, config.num_planets);
+  else
+    add_random_body_sphere(world, config.num_planets);
 
   const bg_scene = new THREE.Scene();
   const background = await makeBackground({
@@ -120,4 +147,25 @@ async function main() {
   requestAnimationFrame(render);
 }
 
-main();
+// ui stuff
+document.getElementById('start').onclick = () => {
+  let num_planets = parseInt((<HTMLInputElement>document.getElementById('num-planets')).value);
+  let spawn_radius = parseFloat((<HTMLInputElement>document.getElementById('spawn-radius')).value);
+  let planet_mass = parseFloat((<HTMLInputElement>document.getElementById('planet-mass')).value);
+  let planet_velocity = parseFloat((<HTMLInputElement>document.getElementById('planet-velocity')).value);
+  let spawn_shape = 'sphere';
+  if ((<HTMLOptionElement>document.getElementById('flat-shape')).selected === true) {
+    spawn_shape = 'flat'
+  }
+  let spawn_sun = (<HTMLInputElement>document.getElementById('spawn-sun')).checked;
+  let tail_length = parseFloat((<HTMLInputElement>document.getElementById('tail-length')).value);
+  config.num_planets = num_planets;
+  config.spawn_radius = spawn_radius;
+  config.planet_mass = planet_mass;
+  config.planet_velocity = planet_velocity;
+  config.spawn_shape = spawn_shape;
+  config.spawn_sun = spawn_sun;
+  trace_config.trace_num = tail_length;
+  document.getElementById('config').hidden = true;
+  main();
+}
