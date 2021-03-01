@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "stats-js": "git+https://git@github.com/ssine/stats.js.git",
-    "three": "^0.107.0",
+    "three": "^0.125.0",
     "three-orbitcontrols-ts": "git+https://git@github.com/nicolaspanel/three-orbitcontrols-ts.git"
   },
   "devDependencies": {
