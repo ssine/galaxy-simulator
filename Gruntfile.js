@@ -8,6 +8,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   const commonjs = require('rollup-plugin-commonjs');
   const node_resolve = require('rollup-plugin-node-resolve');
+  const babel = require('rollup-plugin-babel');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -19,6 +20,7 @@ module.exports = function (grunt) {
     rollup: {
       options: {
         plugins: [
+          babel({plugins: ['transform-class-properties'], include: ['node_modules/three/examples/jsm/webxr/**']}),
           node_resolve({
             browser: true,
           }),
@@ -57,7 +59,7 @@ module.exports = function (grunt) {
       server: {
         options: {
           livereload: true,
-          port: 8000,
+          port: 31006,
           hostname: 'localhost',
           base: ['dist/out/']
         }

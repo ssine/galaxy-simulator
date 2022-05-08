@@ -10,10 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "stats-js": "git+https://git@github.com/ssine/stats.js.git",
-    "three": "^0.107.0",
-    "three-orbitcontrols-ts": "git+https://git@github.com/nicolaspanel/three-orbitcontrols-ts.git"
+    "three": "^0.140.0",
+    "three-orbitcontrols-ts": "^0.1.2"
   },
   "devDependencies": {
+    "@types/three": "^0.140.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "grunt": "^1.0.4",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-connect": "^2.0.0",
@@ -21,6 +23,7 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-rollup": "^10.0.0",
     "grunt-ts": "^6.0.0-beta.22",
+    "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.0.2",
     "rollup-plugin-node-resolve": "^5.2.0",
     "typescript": "^3.5.3"
